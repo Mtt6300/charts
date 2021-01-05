@@ -1,0 +1,8 @@
+
+1. Job {{ include "mongo-backup-job.fullname" . }} deployed to {{ .Release.Namespace }} namespace.
+
+It will starting to dump backup from provided database.
+You can check it out with kubectl:
+kubectl get job {{ include "mongo-backup-job.fullname" . }} -n {{ .Release.Namespace }} -w
+
+After completions you can get your backup from provided volume.

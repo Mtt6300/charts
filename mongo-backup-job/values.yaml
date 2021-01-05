@@ -1,0 +1,87 @@
+# Default values for mongo-backup-job.
+# This is a YAML-formatted file.
+
+
+config:
+  ## the host you want backup
+  host : "mongodb.default.svc.cluster.local"
+  ## by default that dump backup from all databases unless you uncomment db section and select databse.
+  # db: "binancetelegrambot"
+  username : "root"
+  password: "root"
+  #the name of secret you want use for password
+  # secret:
+  #   name: mongodb
+  #   key: mongodb-root-password
+
+  # the dump output format
+  ## default is $(date +"dump-%d-%m-%Y|%R" and gives you 'dump-04-01-2021|17:12' folder name.
+  ourputFormat: $(date +"dump-%d-%m-%Y|%R")   
+  gzip: true
+
+
+replicaCount: 1
+
+image:
+  repository: bitnami/mongodb
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "4.2.4-debian-10-r0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+
+nodeSelector: {}
+  # type: master
+
+tolerations: []
+
+affinity: {}
+
+
+persistence:
+  enabled: true
+  ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
+  ## Default: volume.alpha.kubernetes.io/storage-class: default
+  ##
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+

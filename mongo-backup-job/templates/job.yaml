@@ -1,0 +1,89 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "mongo-backup-job.fullname" . }}
+  labels:
+    {{- include "mongo-backup-job.labels" . | nindent 4 }}
+
+spec:
+  template:
+    metadata:
+      name: {{ template "mongo-backup-job.fullname" . }}
+      labels:
+        {{- include "mongo-backup-job.selectorLabels" . | nindent 8 }}
+    spec:
+
+      {{- with .Values.imagePullSecrets }}
+        imagePullSecrets:
+          {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mongo-backup-job.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+
+
+        command:
+        - "sh"
+        - "-c"
+        - date; mongodump 
+          --host {{ .Values.config.host}}
+          {{- if .Values.config.db}}
+          --db {{.Values.config.db }}
+          {{- end }}
+          --username {{ .Values.config.username }} 
+          {{- if .Values.config.secret}}
+          --password $DB_PASSWORD
+          {{- else}}
+          --password {{ .Values.config.password }}
+          {{- end}}
+          --out /dump/{{ .Values.config.ourputFormat}}
+          {{- if .Values.config.gzip }}
+          --gzip
+          {{ end }}  
+
+
+        {{- if .Values.config.secret}}
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.secret.name}}
+              key: {{ .Values.config.secret.key}}
+        {{- end}}
+
+        volumeMounts:
+        - mountPath: "/dump"
+          name: mongodump
+
+      restartPolicy: Never
+      volumes:
+      - name: mongodump
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "mongo-backup-job.fullname" . }}
+      {{- else }}
+        emptyDir: {}
+      {{- end}}  
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+
+  backoffLimit: 2
+
