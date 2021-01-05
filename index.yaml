@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  mongo-backup-job:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-01-05T13:19:28.074357867+03:30"
+    description: Dump backup from mongodb
+    digest: 6c2466fdcb160aada88537957228d4bd10d4a32cf3a8e724a78d6242be8f874e
+    name: mongo-backup-job
+    type: application
+    urls:
+    - https://mtt6300.github.io/charts/mongo-backup-job-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-01-05T13:19:28.073687229+03:30"

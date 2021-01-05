@@ -1,4 +1,3 @@
-# Charts
 My personal helm charts.
 # Usage 
 To add the Helm Charts for your local client, run helm repo add:
