@@ -3,9 +3,9 @@ entries:
   cc-exporter:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-01-29T11:59:55.172608729+03:30"
+    created: "2021-01-29T12:59:51.06370559+03:30"
     description: Prometheus CoinCap Api Metrics Exporter
-    digest: f599d7aebfe0a81f27b3375f1c57269febb0b1994c8d6338f818240a3c448848
+    digest: bf73bd844a605f4c963c852cb85557e532b7b9d4a4282fa1680226b955d95da9
     name: cc-exporter
     type: application
     urls:
@@ -14,7 +14,7 @@ entries:
   mongo-backup-job:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2021-01-29T11:59:55.173052268+03:30"
+    created: "2021-01-29T12:59:51.06412117+03:30"
     description: Dump backup from mongodb
     digest: 5c7d8e9d0871c5ce3c95f4cd32dd3b5d5a92fc02a85e59232275a905fd95dbe0
     name: mongo-backup-job
@@ -22,4 +22,4 @@ entries:
     urls:
     - https://mtt6300.github.io/charts/mongo-backup-job-0.1.1.tgz
     version: 0.1.1
-generated: "2021-01-29T11:59:55.171800477+03:30"
+generated: "2021-01-29T12:59:51.063056274+03:30"
