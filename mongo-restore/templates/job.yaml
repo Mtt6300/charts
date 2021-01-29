@@ -1,0 +1,92 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "mongo-restore.fullname" . }}
+  labels:
+    {{- include "mongo-restore.labels" . | nindent 4 }}
+
+spec:
+  template:
+    metadata:
+      name: {{ template "mongo-restore.fullname" . }}
+      labels:
+        {{- include "mongo-restore.selectorLabels" . | nindent 8 }}
+    spec:
+
+      {{- with .Values.imagePullSecrets }}
+        imagePullSecrets:
+          {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mongo-restore.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+
+        command: ["/bin/sh","-c"]
+        args:
+        {{- if .Values.config.source.link}}
+        - "curl --output /tmp/dump.zip {{ .Values.config.source.link}} && 
+          unzip /tmp/dump.zip -d /tmp/dump/ && 
+          mongorestore /tmp/dump/ {{- if .Values.config.source.db }} -d {{ .Values.config.source.db }} {{ end }} {{- if .Values.config.source.gzip }} --gzip {{ end }} -u {{ .Values.config.destination.username}} -p {{- if .Values.config.destination.secret }} $DB_PASSWORD {{ end }} {{ .Values.config.destination.password}} --host {{ .Values.config.destination.host}}"
+        {{ else if .Values.config.source.hostPath}} 
+
+        {{- if eq .Values.config.source.hostPath.fileFormat "zip"}}       
+        - "unzip {{ .Values.config.source.hostPath.filePath}} -d /tmp/dump/ &&  
+          mongorestore /tmp/dump/ {{- if .Values.config.source.db }} -d {{ .Values.config.source.db }} {{ end }} {{- if .Values.config.source.gzip }} --gzip {{ end }} -u {{ .Values.config.destination.username}} -p {{- if .Values.config.destination.secret }} $DB_PASSWORD {{ end }} {{ .Values.config.destination.password}} --host {{ .Values.config.destination.host}}"
+        {{- else if eq .Values.config.source.hostPath.fileFormat "directory"}} 
+        - "mongorestore {{ .Values.config.source.hostPath.filePath}} {{- if .Values.config.source.db }} -d {{ .Values.config.source.db }} {{ end }} {{- if .Values.config.source.gzip }} --gzip {{ end }} -u {{ .Values.config.destination.username}} -p {{- if .Values.config.destination.secret }} $DB_PASSWORD {{ end }} {{ .Values.config.destination.password}} --host {{ .Values.config.destination.host}}"
+        {{- end }}
+
+        {{- end }}
+        
+
+
+        {{- if .Values.config.destination.secret}}
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.destination.secret.name}}
+              key: {{ .Values.config.destination.secret.key}}
+        {{- end}}
+
+        {{- if .Values.config.source.hostPath}}
+        volumeMounts:
+        - name: dumpfile
+          mountPath: {{ .Values.config.source.hostPath.filePath}}
+        {{- end}}
+
+      {{- if .Values.config.source.hostPath}}
+      volumes:
+        - name: dumpfile
+          hostPath:
+            path: {{ .Values.config.source.hostPath.filePath}}
+            type: {{- if eq .Values.config.source.hostPath.fileFormat "zip"}} File {{- else if eq .Values.config.source.hostPath.fileFormat "directory"}} Directory {{- end}}
+      {{- end}}
+
+
+
+      restartPolicy: Never
+
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+
+  backoffLimit: 2
+

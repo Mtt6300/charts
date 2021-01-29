@@ -1,0 +1,82 @@
+# Default values for mongo-restore.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+config:
+  source:
+    link : "https://example.com/yourDatabase.zip" # uploaded database file
+
+    hostPath:
+      filePath: "/home/ubuntu/yourDatabase.zip" # database local filepath
+      fileFormat: zip # zip , directory
+
+    gzip: false # gzip option
+    db: "admin" # specefic database
+
+  destination:
+    host : "mongodb.test.svc.cluster.local" # host
+    
+    username : "root" # username
+    password: "root" # password
+
+    # the name of secret you want use for password
+    secret:
+      name: mongodb
+      key: mongodb-root-password
+
+
+
+replicaCount: 1
+
+image:
+  repository: bitnami/mongodb
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "4.2.4-debian-10-r0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 1001
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1001
+
+
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
