@@ -4,12 +4,13 @@
 
 
 config:
-  INTERVAL: "50"
-  CRYPTOS: ethereum,bitcoin,xrp,binance-coin,stellar,tether
-  APP_PORT: 5000
-  COINCAPURL: https://api.coincap.io/v2/assets
+  INTERVAL: "50" # Timeout for fetch in data from api.
+  CRYPTOS: ethereum,bitcoin,xrp,binance-coin,stellar,tether # String that shows which Coins you want to monitor. If is more than 1, you must separate coin id's with Commas.
+  APP_PORT: 5000 # Cc-exporter port.
+  COINCAPURL: https://api.coincap.io/v2/assets # Coin Cap Api url.
 
 
+# for more info https://github.com/Mtt6300/cc-exporter
 
 
 replicaCount: 1
