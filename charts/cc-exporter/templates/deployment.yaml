@@ -49,7 +49,15 @@ spec:
             value: "{{ .Values.config.CRYPTOS }}"     
 
           - name: APP_PORT
-            value: "{{ .Values.config.APP_PORT }}"    
+            value: "{{ .Values.config.APP_PORT }}"   
+
+          # - name: http_proxy
+          #   value: "http://192.168.254.10:1370"
+
+          # - name: https_proxy
+          #   value: "http://192.168.254.10:1370"    
+
+
 
 
           resources:
